@@ -3,6 +3,7 @@ import { connect } from 'cato-react-store';
 
 import { getUser } from './auth';
 import Account from './Account';
+import Home from './Home';
 import mapping from './mapping';
 
 class App extends React.PureComponent {
@@ -17,18 +18,7 @@ class App extends React.PureComponent {
     const { user, logout } = this.props;
 
     if (user) {
-      return (
-        <div>
-          <h1>Hello dear user {user.name}</h1>
-          <button
-            type="button"
-            className="btn btn-outline-primary"
-            onClick={() => logout()}
-          >
-            {'Logout'}
-          </button>
-        </div>
-      );
+      return <Home />;
     }
 
     return <Account />;
