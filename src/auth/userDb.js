@@ -16,7 +16,6 @@ export const findUser = (userName) => {
 
 export const verifyUser = ({ userName, password }) => {
   const users = getUsers();
-  console.log(userName, password, users);
   return users.find(user => (
     user.userName === userName
     && user.password === password

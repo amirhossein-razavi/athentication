@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'cato-react-store';
+import { Link } from 'react-router-dom';
+import { setUser } from '../../auth';
 import mapping from '../mapping';
 
 class Register extends React.PureComponent {
@@ -35,21 +37,44 @@ class Register extends React.PureComponent {
     }
 
     const { user } = this.state;
-    const { onRegister } = this.props;
+    const { onRegister, setNewUser } = this.props;
 
     // TODO: validation
 
-    const result = onRegister(user);
-    if (result && result.hasError) {
-      this.setState({
-        error: result.message,
+    onRegister(user)
+      .then(result => {
+        console.log(result);
+        if (!result) {
+          this.setState({
+            error: `Duplicate username ${user.userName}`,
+          });
+        } else {
+          this.setState({
+            error: '',
+          });
+          setUser(result);
+          setNewUser(result);
+          window.location.href = "http://localhost:3000";
+        }
+      })
+      .catch(err => {
+        this.setState({
+          error: err.message || err.data || 'Unknown error',
+        });
       });
-    }
+
+    // const result = onRegister(user);
+    // if (result && result.hasError) {
+    //   this.setState({
+    //     error: result.message,
+    //   });
+    // }
   }
 
   render() {
     const { changeMode } = this.props;
     const { user, error } = this.state;
+    console.log(error);
 
     return (
       <div className="card shadow-sm no-border">
@@ -58,7 +83,7 @@ class Register extends React.PureComponent {
         </div>
         <div className="card-body">
 
-          <form onSubmit={this.onSubmit}>
+          <form>
 
             <div className="form-group">
               <input
@@ -109,12 +134,15 @@ class Register extends React.PureComponent {
             )}
 
             <div className="form-group">
-              <button
-                type="submit"
-                className="btn btn-primary mr-2"
-              >
-                {'Register'}
-              </button>
+              <Link to='/'>
+                <button
+                  type="submit"
+                  className="btn btn-primary mr-2"
+                  onClick={() => this.onSubmit()}
+                >
+                  {'Register'}
+                </button>
+              </Link>
 
               <button
                 type="button"
@@ -127,7 +155,7 @@ class Register extends React.PureComponent {
           </form>
 
         </div>
-      </div>
+      </div >
     );
   };
 }

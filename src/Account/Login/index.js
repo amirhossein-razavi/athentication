@@ -1,6 +1,10 @@
 import React from 'react';
 import { connect } from 'cato-react-store';
+import { setUser } from '../../auth';
 import mapping from '../mapping';
+
+
+// let history = useHistory();
 
 class Login extends React.PureComponent {
   constructor(props) {
@@ -33,22 +37,37 @@ class Login extends React.PureComponent {
     }
 
     const { login } = this.state;
-    const { onLogin } = this.props;
+    const { onLogin , setNewUser} = this.props;
 
     // TODO: validation
 
-    const result = onLogin(login);
-
-    if (!result) {
-      this.setState({
-        error: 'Invalid username or password',
+    onLogin(login)
+      .then(result => {
+        if (!result) {
+          this.setState({
+            error: 'Invalid username or password',
+          });
+        } else {
+          this.setState({
+            error: '',
+          });
+          setUser(result);
+          setNewUser(result);
+          window.location.href = "http://localhost:3000";
+        }
+      })
+      .catch(err => {
+        this.setState({
+          error: err.message || err.data || 'Unknown error',
+        });
       });
-    }
+
   }
 
   render() {
-    const { changeMode } = this.props;
+    const { changeMode, user } = this.props;
     const { login, error } = this.state;
+
 
     return (
       <div className="card shadow-sm no-border">
@@ -56,7 +75,7 @@ class Login extends React.PureComponent {
           <h5>Login</h5>
         </div>
         <div className="card-body">
-          <form onSubmit={this.onSubmit}>
+          <form>
 
             <div className="form-group">
               <input
@@ -90,6 +109,7 @@ class Login extends React.PureComponent {
               <button
                 type="submit"
                 className="btn btn-primary mr-2"
+                onClick={(e) => this.onSubmit(e)}
               >
                 {'Login'}
               </button>
